@@ -27,7 +27,7 @@ const app_1 = __importStar(require("./app"));
 const env_1 = require("./env");
 (0, app_1.addPlugins)();
 (0, app_1.addRoutes)();
-app_1.default.listen({ port: env_1.PORT, host: env_1.DOMAIN }, (err, address) => {
+app_1.default.listen({ port: env_1.PORT }, (err, address) => {
     if (err) {
         console.error(err.message);
         return process.exit(1);
