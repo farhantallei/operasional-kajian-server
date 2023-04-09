@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "start": "node main.js",
     "postinstall": "prisma generate"
   },
   "dependencies": {
