@@ -17,5 +17,25 @@ const bookRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
         schema: book_schemas_1.ListBooksSchema,
         handler: book_handlers_1.ListBooksHandler,
     });
+    route.post('/', {
+        schema: book_schemas_1.CreateBookSchema,
+        handler: book_handlers_1.CreateBookHandler,
+    });
+    route.get('/author', {
+        schema: book_schemas_1.ListAuthorsSchema,
+        handler: book_handlers_1.ListAuthorsHandler,
+    });
+    route.post('/author', {
+        schema: book_schemas_1.CreateAuthorSchema,
+        handler: book_handlers_1.CreateAuthorHandler,
+    });
+    route.get('/category', {
+        schema: book_schemas_1.ListCategoriesSchema,
+        handler: book_handlers_1.ListCategoriesHandler,
+    });
+    route.post('/category', {
+        schema: book_schemas_1.CreateCategorySchema,
+        handler: book_handlers_1.CreateCategoryHandler,
+    });
 });
 exports.bookRoutes = bookRoutes;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listBooks = void 0;
+exports.checkCategory = exports.createCategory = exports.listCategories = exports.checkAuthor = exports.createAuthor = exports.listAuthorsByBookId = exports.listAuthors = exports.createBook = exports.listBooks = void 0;
 const prisma_1 = __importDefault(require("../../lib/prisma"));
 const utils_1 = require("../../utils");
 function listBooks(reply) {
@@ -28,3 +28,61 @@ function listBooks(reply) {
     });
 }
 exports.listBooks = listBooks;
+function createBook(reply, { title, authorIds, categoryId, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const book = yield (0, utils_1.commitToDB)(prisma_1.default.book.create({
+            data: { title, categoryId },
+            include: { category: { select: { name: true } } },
+        }), reply);
+        yield (0, utils_1.commitToDB)(prisma_1.default.authorsOnBooks.createMany({
+            data: authorIds.map((id) => ({ bookId: book.id, authorId: id })),
+        }), reply);
+        return book;
+    });
+}
+exports.createBook = createBook;
+function listAuthors(reply) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.author.findMany(), reply);
+    });
+}
+exports.listAuthors = listAuthors;
+function listAuthorsByBookId(reply, bookId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.authorsOnBooks.findMany({
+            where: { bookId },
+            select: { author: { select: { id: true, name: true } } },
+        }), reply);
+    });
+}
+exports.listAuthorsByBookId = listAuthorsByBookId;
+function createAuthor(reply, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.author.create({ data }), reply);
+    });
+}
+exports.createAuthor = createAuthor;
+function checkAuthor(reply, name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.author.count({ where: { name } }), reply).then((count) => !!count);
+    });
+}
+exports.checkAuthor = checkAuthor;
+function listCategories(reply) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.category.findMany(), reply);
+    });
+}
+exports.listCategories = listCategories;
+function createCategory(reply, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.category.create({ data }), reply);
+    });
+}
+exports.createCategory = createCategory;
+function checkCategory(reply, name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.category.count({ where: { name } }), reply).then((count) => !!count);
+    });
+}
+exports.checkCategory = checkCategory;
