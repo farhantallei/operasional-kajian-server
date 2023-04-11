@@ -9,11 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routes = void 0;
-const book_routes_1 = require("../modules/book/book.routes");
-const auth_routes_1 = require("../modules/auth/auth.routes");
-const routes = (route) => __awaiter(void 0, void 0, void 0, function* () {
-    route.register(auth_routes_1.authRoutes, { prefix: 'auth' });
-    route.register(book_routes_1.bookRoutes, { prefix: 'book' });
+exports.authRoutes = void 0;
+const auth_handlers_1 = require("./auth.handlers");
+const auth_schemas_1 = require("./auth.schemas");
+const authRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
+    route.post('/login', {
+        schema: auth_schemas_1.LoginSchema,
+        handler: auth_handlers_1.LoginHandler,
+    });
+    route.post('/refresh-token', {
+        schema: auth_schemas_1.RefreshTokenSchema,
+        handler: auth_handlers_1.RefreshTokenHandler,
+    });
 });
-exports.routes = routes;
+exports.authRoutes = authRoutes;

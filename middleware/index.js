@@ -9,11 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routes = void 0;
-const book_routes_1 = require("../modules/book/book.routes");
-const auth_routes_1 = require("../modules/auth/auth.routes");
-const routes = (route) => __awaiter(void 0, void 0, void 0, function* () {
-    route.register(auth_routes_1.authRoutes, { prefix: 'auth' });
-    route.register(book_routes_1.bookRoutes, { prefix: 'book' });
+exports.authentication = void 0;
+const authentication = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const authHeader = request.headers.authorization;
+    if (authHeader == null)
+        return reply.unauthorized('Not authenticated');
 });
-exports.routes = routes;
+exports.authentication = authentication;

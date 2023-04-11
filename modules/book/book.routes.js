@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookRoutes = void 0;
 const book_schemas_1 = require("./book.schemas");
 const book_handlers_1 = require("./book.handlers");
+const middleware_1 = require("../../middleware");
 const bookRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
+    route.addHook('preHandler', middleware_1.authentication);
     route.get('/', {
         schema: book_schemas_1.ListBooksSchema,
         handler: book_handlers_1.ListBooksHandler,
