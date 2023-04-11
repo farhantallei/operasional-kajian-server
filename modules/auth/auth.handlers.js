@@ -18,26 +18,21 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const env_1 = require("../../env");
 const LoginHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = request.body;
-    try {
-        if (username !== env_1.USERNAME_AUTH)
-            return reply.badRequest('Invalid credentials.');
-        const isPasswordCorrect = yield bcryptjs_1.default.compare(password, env_1.PASSWORD_AUTH);
-        if (!isPasswordCorrect)
-            return reply.badRequest('Invalid credentials.');
-        const refreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
-            expiresIn: '3d',
-        });
-        reply.setCookie('jwt_token', refreshToken, {
-            signed: true,
-            httpOnly: true,
-            sameSite: true,
-        });
-        const accessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-        return { token: accessToken };
-    }
-    catch (error) {
-        return reply.internalServerError(typeof error === 'string' ? error : 'Internal Server Error');
-    }
+    if (username !== env_1.USERNAME_AUTH)
+        return reply.badRequest('Invalid credentials.');
+    const isPasswordCorrect = yield bcryptjs_1.default.compare(password, env_1.PASSWORD_AUTH);
+    if (!isPasswordCorrect)
+        return reply.badRequest('Invalid credentials.');
+    const refreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
+        expiresIn: '3d',
+    });
+    reply.setCookie('jwt_token', refreshToken, {
+        signed: true,
+        httpOnly: true,
+        sameSite: true,
+    });
+    const accessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    return { token: accessToken };
 });
 exports.LoginHandler = LoginHandler;
 const RefreshTokenHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {

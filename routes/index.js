@@ -10,10 +10,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.routes = void 0;
-const book_routes_1 = require("../modules/book/book.routes");
 const auth_routes_1 = require("../modules/auth/auth.routes");
+const book_routes_1 = require("../modules/book/book.routes");
+const place_routes_1 = require("../modules/place/place.routes");
+const crew_routes_1 = require("../modules/crew/crew.routes");
+const storageDevice_routes_1 = require("../modules/storageDevice/storageDevice.routes");
+const record_routes_1 = require("../modules/record/record.routes");
 const routes = (route) => __awaiter(void 0, void 0, void 0, function* () {
     route.register(auth_routes_1.authRoutes, { prefix: 'auth' });
     route.register(book_routes_1.bookRoutes, { prefix: 'book' });
+    route.register(place_routes_1.placeRoutes, { prefix: 'place' });
+    route.register(crew_routes_1.crewRoutes, { prefix: 'crew' });
+    route.register(storageDevice_routes_1.storageDeviceRoutes, { prefix: 'storage-device' });
+    route.register(record_routes_1.recordRoutes, { prefix: 'record' });
 });
 exports.routes = routes;

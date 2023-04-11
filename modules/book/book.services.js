@@ -32,7 +32,7 @@ function createBook(reply, { title, authorIds, categoryId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const book = yield (0, utils_1.commitToDB)(prisma_1.default.book.create({
             data: { title, categoryId },
-            include: { category: { select: { name: true } } },
+            select: { id: true, title: true, category: true },
         }), reply);
         yield (0, utils_1.commitToDB)(prisma_1.default.authorsOnBooks.createMany({
             data: authorIds.map((id) => ({ bookId: book.id, authorId: id })),
@@ -51,7 +51,7 @@ function listAuthorsByBookId(reply, bookId) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, utils_1.commitToDB)(prisma_1.default.authorsOnBooks.findMany({
             where: { bookId },
-            select: { author: { select: { id: true, name: true } } },
+            select: { author: true },
         }), reply);
     });
 }

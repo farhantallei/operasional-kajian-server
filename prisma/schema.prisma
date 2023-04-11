@@ -23,18 +23,115 @@ model Category {
 }
 
 model Book {
+  category Category @relation(fields: [categoryId], references: [id])
+
   id         Int              @id @default(autoincrement())
   title      String
   authors    AuthorsOnBooks[]
-  category   Category         @relation(fields: [categoryId], references: [id])
   categoryId Int
+  records    Record[]
 }
 
 model AuthorsOnBooks {
-  book     Book   @relation(fields: [bookId], references: [id])
+  book   Book   @relation(fields: [bookId], references: [id])
+  author Author @relation(fields: [authorId], references: [id])
+
   bookId   Int
-  author   Author @relation(fields: [authorId], references: [id])
   authorId Int
 
   @@id([bookId, authorId])
+}
+
+model Place {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String   @unique
+  latitude  Decimal
+  longitude Decimal
+  records   Record[]
+
+  @@unique([latitude, longitude])
+}
+
+model Crew {
+  id             Int              @id @default(autoincrement())
+  username       String           @unique
+  name           String
+  email          String?
+  phoneNumber    String?
+  storageDevices StorageDevice[]
+  records        CrewsOnRecords[]
+}
+
+model Device {
+  id             Int             @id @default(autoincrement())
+  type           String
+  storageDevices StorageDevice[]
+}
+
+model StorageDevice {
+  device Device @relation(fields: [deviceId], references: [id])
+  owner  Crew   @relation(fields: [ownerId], references: [id])
+
+  id       Int      @id @default(autoincrement())
+  brand    String
+  deviceId Int
+  storage  Int
+  ownerId  Int      @map("crewId")
+  records  Record[]
+}
+
+enum RecordAction {
+  move
+  edit
+  submit
+}
+
+enum RecordStatus {
+  raw
+  final
+  lost
+  corrupt
+}
+
+model Record {
+  location StorageDevice @relation(fields: [locationId], references: [id])
+  book     Book          @relation(fields: [bookId], references: [id])
+  place    Place         @relation(fields: [placeId], references: [id])
+
+  id         Int              @id @default(autoincrement())
+  title      String
+  sequence   Int
+  lastAction RecordAction
+  locationId Int              @map("storageDeviceId")
+  status     RecordStatus
+  bookId     Int
+  placeId    Int
+  recordedAt DateTime
+  crews      CrewsOnRecords[]
+
+  @@unique([sequence, bookId])
+}
+
+enum CrewRole {
+  recording
+  streaming
+  editing
+}
+
+enum SalaryStatus {
+  paid
+  unpaid
+}
+
+model CrewsOnRecords {
+  record Record @relation(fields: [recordId], references: [id])
+  crew   Crew   @relation(fields: [crewId], references: [id])
+
+  recordId     Int
+  crewId       Int
+  role         CrewRole
+  salaryStatus SalaryStatus
+
+  @@id([recordId, crewId])
 }
