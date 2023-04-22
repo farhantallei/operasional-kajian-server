@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.recordRoutes = void 0;
 const record_handlers_1 = require("./record.handlers");
 const record_schemas_1 = require("./record.schemas");
+const middleware_1 = require("../../middleware");
 const recordRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
+    route.addHook('preHandler', middleware_1.authentication);
     route.get('/', {
         schema: record_schemas_1.ListRecordsSchema,
         handler: record_handlers_1.ListRecordsHandler,

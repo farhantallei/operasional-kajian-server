@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.storageDeviceRoutes = void 0;
 const storageDevice_handlers_1 = require("./storageDevice.handlers");
 const storageDevice_schemas_1 = require("./storageDevice.schemas");
+const middleware_1 = require("../../middleware");
 const storageDeviceRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
+    route.addHook('preHandler', middleware_1.authentication);
     route.get('/', {
         schema: storageDevice_schemas_1.ListStorageDevicesSchema,
         handler: storageDevice_handlers_1.ListStorageDevicesHandler,
