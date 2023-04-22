@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateBookSchema = exports.CreateCategorySchema = exports.ListCategoriesSchema = exports.CreateAuthorSchema = exports.ListAuthorsSchema = exports.ListBooksSchema = void 0;
+exports.CreateBookSchema = exports.CreateCategorySchema = exports.ListCategoriesSchema = exports.CreateAuthorSchema = exports.ListAuthorsSchema = exports.ListBooksSchema = exports.bookSchema = void 0;
 const type_provider_typebox_1 = require("@fastify/type-provider-typebox");
 const authorSchema = type_provider_typebox_1.Type.Object({
     id: type_provider_typebox_1.Type.Integer(),
@@ -10,7 +10,7 @@ const categorySchema = type_provider_typebox_1.Type.Object({
     id: type_provider_typebox_1.Type.Integer(),
     name: type_provider_typebox_1.Type.String(),
 });
-const bookSchema = type_provider_typebox_1.Type.Object({
+exports.bookSchema = type_provider_typebox_1.Type.Object({
     id: type_provider_typebox_1.Type.Integer(),
     title: type_provider_typebox_1.Type.String(),
     authors: type_provider_typebox_1.Type.Array(authorSchema),
@@ -18,7 +18,7 @@ const bookSchema = type_provider_typebox_1.Type.Object({
 });
 exports.ListBooksSchema = {
     response: {
-        200: type_provider_typebox_1.Type.Array(bookSchema),
+        200: type_provider_typebox_1.Type.Array(exports.bookSchema),
     },
 };
 exports.ListAuthorsSchema = {
@@ -54,6 +54,6 @@ exports.CreateBookSchema = {
         categoryId: type_provider_typebox_1.Type.Integer({ minimum: 1 }),
     }),
     response: {
-        201: bookSchema,
+        201: exports.bookSchema,
     },
 };

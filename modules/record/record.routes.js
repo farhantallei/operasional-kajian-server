@@ -10,6 +10,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.recordRoutes = void 0;
+const record_handlers_1 = require("./record.handlers");
+const record_schemas_1 = require("./record.schemas");
 const recordRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
+    route.get('/', {
+        schema: record_schemas_1.ListRecordsSchema,
+        handler: record_handlers_1.ListRecordsHandler,
+    });
+    route.post('/', {
+        schema: record_schemas_1.RegisterRecordSchema,
+        handler: record_handlers_1.RegisterRecordHandler,
+    });
+    route.post('/:upcomingRecordId', {
+        schema: record_schemas_1.CreateRecordSchema,
+        handler: record_handlers_1.CreateRecordHandler,
+    });
+    route.post('/action', {
+        schema: record_schemas_1.ExecuteRecordActionSchema,
+        handler: record_handlers_1.ExecuteRecordActionHandler,
+    });
 });
 exports.recordRoutes = recordRoutes;
