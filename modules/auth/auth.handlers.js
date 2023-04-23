@@ -31,7 +31,7 @@ const LoginHandler = (request, reply) => __awaiter(void 0, void 0, void 0, funct
         httpOnly: true,
         sameSite: true,
         secure: true,
-        domain: 'kind-pear-hatchling-yoke.cyclic.app',
+        domain: '192.168.1.6',
     });
     const accessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
     return { token: accessToken };
@@ -52,7 +52,7 @@ const RefreshTokenHandler = (request, reply) => __awaiter(void 0, void 0, void 0
         httpOnly: true,
         sameSite: true,
         secure: true,
-        domain: 'kind-pear-hatchling-yoke.cyclic.app',
+        domain: '192.168.1.6',
     });
     const newAccessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, {
         expiresIn: '15m',
