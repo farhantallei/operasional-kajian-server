@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExecuteRecordActionHandler = exports.CreateRecordHandler = exports.RegisterRecordHandler = exports.ListRecordsHandler = void 0;
+exports.ExecuteRecordActionHandler = exports.CreateRecordHandler = exports.RegisterRecordHandler = exports.ListUpcomingRecordsHandler = exports.ListRecordsHandler = void 0;
 const record_services_1 = require("./record.services");
 const ListRecordsHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const records = yield (0, record_services_1.listRecords)(reply);
@@ -31,6 +31,14 @@ const ListRecordsHandler = (request, reply) => __awaiter(void 0, void 0, void 0,
     });
 });
 exports.ListRecordsHandler = ListRecordsHandler;
+const ListUpcomingRecordsHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const upcomingRecords = yield (0, record_services_1.listUpcomingRecords)(reply);
+    return upcomingRecords.map((_a) => {
+        var { crews, book, place, startedOn } = _a, upcomingRecord = __rest(_a, ["crews", "book", "place", "startedOn"]);
+        return (Object.assign(Object.assign({}, upcomingRecord), { book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), startedOn: startedOn.toISOString(), crews: crews.map(({ crew, substitute }) => (Object.assign(Object.assign({}, crew), { substitute }))) }));
+    });
+});
+exports.ListUpcomingRecordsHandler = ListUpcomingRecordsHandler;
 const RegisterRecordHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const data = request.body;
     const _a = yield (0, record_services_1.registerRecord)(reply, data), { book, place, startedOn } = _a, upcomingRecord = __rest(_a, ["book", "place", "startedOn"]);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExecuteRecordActionSchema = exports.CreateRecordSchema = exports.RegisterRecordSchema = exports.ListRecordsSchema = void 0;
+exports.ExecuteRecordActionSchema = exports.CreateRecordSchema = exports.RegisterRecordSchema = exports.ListUpcomingRecordsSchema = exports.ListRecordsSchema = void 0;
 const type_provider_typebox_1 = require("@fastify/type-provider-typebox");
 const book_schemas_1 = require("../book/book.schemas");
 const storageDevice_schemas_1 = require("../storageDevice/storageDevice.schemas");
@@ -64,6 +64,11 @@ const upcomingRecordSchema = type_provider_typebox_1.Type.Object({
 });
 exports.ListRecordsSchema = {
     response: { 200: type_provider_typebox_1.Type.Array(recordSchema) },
+};
+exports.ListUpcomingRecordsSchema = {
+    response: {
+        200: type_provider_typebox_1.Type.Array(upcomingRecordSchema),
+    },
 };
 exports.RegisterRecordSchema = {
     body: type_provider_typebox_1.Type.Object({

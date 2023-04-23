@@ -19,6 +19,10 @@ const recordRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
         schema: record_schemas_1.ListRecordsSchema,
         handler: record_handlers_1.ListRecordsHandler,
     });
+    route.get('/upcoming', {
+        schema: record_schemas_1.ListUpcomingRecordsSchema,
+        handler: record_handlers_1.ListUpcomingRecordsHandler,
+    });
     route.post('/', {
         schema: record_schemas_1.RegisterRecordSchema,
         handler: record_handlers_1.RegisterRecordHandler,
