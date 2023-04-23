@@ -26,7 +26,12 @@ const LoginHandler = (request, reply) => __awaiter(void 0, void 0, void 0, funct
     const refreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
         expiresIn: '3d',
     });
-    reply.setCookie('jwt_token', refreshToken);
+    reply.setCookie('jwt_token', refreshToken, {
+        signed: true,
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+    });
     const accessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
     return { token: accessToken };
 });
@@ -35,10 +40,18 @@ const RefreshTokenHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     const signedRefreshToken = request.cookies.jwt_token;
     if (!signedRefreshToken)
         return reply.unauthorized('Not authenticated');
+    const { value: refreshToken } = reply.unsignCookie(signedRefreshToken);
+    if (refreshToken == null)
+        return reply.forbidden('Token is invalid');
     const newRefreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
         expiresIn: '3d',
     });
-    reply.setCookie('jwt_token', newRefreshToken);
+    reply.setCookie('jwt_token', newRefreshToken, {
+        signed: true,
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+    });
     const newAccessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, {
         expiresIn: '15m',
     });
