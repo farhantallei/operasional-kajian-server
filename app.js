@@ -15,7 +15,7 @@ function addPlugins() {
     app.register(cookie_1.default, { secret: env_1.COOKIE_SECRET });
     app.register(cors_1.default, {
         credentials: true,
-        origin: 'http://192.168.1.6:5173',
+        origin: env_1.CLIENT_URL,
     });
     app.register(sensible_1.default);
 }
