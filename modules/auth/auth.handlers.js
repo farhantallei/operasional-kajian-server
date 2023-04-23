@@ -23,7 +23,6 @@ const LoginHandler = (request, reply) => __awaiter(void 0, void 0, void 0, funct
     const isPasswordCorrect = yield bcryptjs_1.default.compare(password, env_1.PASSWORD_AUTH);
     if (!isPasswordCorrect)
         return reply.badRequest('Invalid credentials.');
-    reply.header('access-control-expose-headers', 'Set-Cookie');
     const refreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
         expiresIn: '3d',
     });
@@ -43,7 +42,6 @@ const RefreshTokenHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     const { value: refreshToken } = reply.unsignCookie(signedRefreshToken);
     if (refreshToken == null)
         return reply.forbidden('Token is invalid');
-    reply.header('access-control-expose-headers', 'Set-Cookie');
     const newRefreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
         expiresIn: '3d',
     });
