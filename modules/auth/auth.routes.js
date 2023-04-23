@@ -12,10 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRoutes = void 0;
 const auth_handlers_1 = require("./auth.handlers");
 const auth_schemas_1 = require("./auth.schemas");
+const middleware_1 = require("../../middleware");
 const authRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
     route.post('/login', {
         schema: auth_schemas_1.LoginSchema,
         handler: auth_handlers_1.LoginHandler,
+    });
+    route.post('/logout', {
+        preHandler: middleware_1.authentication,
+        handler: (request, reply) => {
+            reply.setCookie('jwt_token', '');
+            return reply.code(204).send();
+        },
     });
     route.post('/refresh-token', {
         schema: auth_schemas_1.RefreshTokenSchema,
