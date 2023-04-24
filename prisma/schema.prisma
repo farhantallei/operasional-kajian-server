@@ -25,11 +25,12 @@ model Category {
 model Book {
   category Category @relation(fields: [categoryId], references: [id])
 
-  id         Int              @id @default(autoincrement())
-  title      String
-  authors    AuthorsOnBooks[]
-  categoryId Int
-  records    Record[]
+  id             Int              @id @default(autoincrement())
+  title          String
+  authors        AuthorsOnBooks[]
+  categoryId     Int
+  records        Record[]
+  upcomingRecord UpcomingRecord[]
 }
 
 model AuthorsOnBooks {
@@ -43,24 +44,28 @@ model AuthorsOnBooks {
 }
 
 model Place {
-  id        Int      @id @default(autoincrement())
-  name      String
-  address   String   @unique
-  latitude  Decimal
-  longitude Decimal
-  records   Record[]
+  id             Int              @id @default(autoincrement())
+  name           String
+  address        String           @unique
+  latitude       Decimal
+  longitude      Decimal
+  records        Record[]
+  upcomingRecord UpcomingRecord[]
 
   @@unique([latitude, longitude])
 }
 
 model Crew {
-  id             Int              @id @default(autoincrement())
-  username       String           @unique
-  name           String
-  email          String?
-  phoneNumber    String?
-  storageDevices StorageDevice[]
-  records        CrewsOnRecords[]
+  id                     Int                      @id @default(autoincrement())
+  username               String                   @unique
+  name                   String
+  email                  String?
+  phoneNumber            String?
+  storageDevices         StorageDevice[]
+  recordsLastPIC         Record[]
+  records                CrewsOnRecords[]
+  recordActionAudits     RecordActionAudit[]
+  CrewsOnUpcomingRecords CrewsOnUpcomingRecords[]
 }
 
 model Device {
@@ -73,15 +78,17 @@ model StorageDevice {
   device Device @relation(fields: [deviceId], references: [id])
   owner  Crew   @relation(fields: [ownerId], references: [id])
 
-  id       Int      @id @default(autoincrement())
-  brand    String
-  deviceId Int
-  storage  Int
-  ownerId  Int      @map("crewId")
-  records  Record[]
+  id                Int                 @id @default(autoincrement())
+  brand             String
+  deviceId          Int
+  storage           Int
+  ownerId           Int
+  records           Record[]
+  RecordActionAudit RecordActionAudit[]
 }
 
 enum RecordAction {
+  record
   move
   edit
   submit
@@ -96,21 +103,49 @@ enum RecordStatus {
 
 model Record {
   location StorageDevice @relation(fields: [locationId], references: [id])
+  lastPIC  Crew          @relation(fields: [lastPICId], references: [id])
   book     Book          @relation(fields: [bookId], references: [id])
   place    Place         @relation(fields: [placeId], references: [id])
 
-  id         Int              @id @default(autoincrement())
-  title      String
-  sequence   Int
-  lastAction RecordAction
-  locationId Int              @map("storageDeviceId")
-  status     RecordStatus
-  bookId     Int
-  placeId    Int
-  recordedAt DateTime
-  crews      CrewsOnRecords[]
+  id                 Int                 @id @default(autoincrement())
+  title              String
+  sequence           Int
+  lastAction         RecordAction
+  locationId         Int
+  status             RecordStatus
+  lastPICId          Int
+  bookId             Int
+  placeId            Int
+  recordedAt         DateTime
+  updatedAt          DateTime            @default(now())
+  crews              CrewsOnRecords[]
+  recordActionAudits RecordActionAudit[]
 
   @@unique([sequence, bookId])
+}
+
+model UpcomingRecord {
+  book  Book  @relation(fields: [bookId], references: [id])
+  place Place @relation(fields: [placeId], references: [id])
+
+  id        Int                      @id @default(autoincrement())
+  title     String
+  sequence  Int
+  bookId    Int
+  placeId   Int
+  startedOn DateTime
+  crews     CrewsOnUpcomingRecords[]
+}
+
+model CrewsOnUpcomingRecords {
+  upcomingRecord UpcomingRecord @relation(fields: [upcomingRecordId], references: [id])
+  crew           Crew           @relation(fields: [crewId], references: [id])
+
+  upcomingRecordId Int
+  crewId           Int
+  substitute       Boolean
+
+  @@id([upcomingRecordId, crewId])
 }
 
 enum CrewRole {
@@ -134,4 +169,20 @@ model CrewsOnRecords {
   salaryStatus SalaryStatus
 
   @@id([recordId, crewId])
+}
+
+model RecordActionAudit {
+  record   Record        @relation(fields: [recordId], references: [id])
+  PIC      Crew?         @relation(fields: [PICId], references: [id])
+  location StorageDevice @relation(fields: [locationId], references: [id])
+
+  id          Int          @id @default(autoincrement())
+  recordId    Int
+  action      RecordAction
+  status      RecordStatus
+  PICId       Int?
+  locationId  Int
+  performedOn DateTime
+
+  @@index([recordId])
 }
