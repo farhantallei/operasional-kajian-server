@@ -8,11 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkCategory = exports.createCategory = exports.listCategories = exports.checkAuthor = exports.createAuthor = exports.listAuthorsByBookId = exports.listAuthors = exports.createBook = exports.listBooks = void 0;
+exports.checkCategory = exports.createCategory = exports.listCategoriesByBookId = exports.listCategories = exports.checkAuthor = exports.createAuthor = exports.listAuthorsByBookId = exports.listAuthors = exports.createBook = exports.listBooks = void 0;
 const prisma_1 = __importDefault(require("../../lib/prisma"));
 const utils_1 = require("../../utils");
 function listBooks(reply) {
@@ -22,20 +33,26 @@ function listBooks(reply) {
                 id: true,
                 title: true,
                 authors: { select: { author: true } },
-                category: true,
+                categories: { select: { category: true } },
             },
-        }), reply);
+        }), reply).then((books) => books.map((_a) => {
+            var { authors, categories } = _a, book = __rest(_a, ["authors", "categories"]);
+            return (Object.assign(Object.assign({}, book), { authors: authors.map(({ author }) => (Object.assign({}, author))), categories: categories.map(({ category }) => (Object.assign({}, category))) }));
+        }));
     });
 }
 exports.listBooks = listBooks;
-function createBook(reply, { title, authorIds, categoryId, }) {
+function createBook(reply, { title, authorIds, categoryIds, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const book = yield (0, utils_1.commitToDB)(prisma_1.default.book.create({
-            data: { title, categoryId },
-            select: { id: true, title: true, category: true },
+            data: { title },
+            select: { id: true, title: true },
         }), reply);
         yield (0, utils_1.commitToDB)(prisma_1.default.authorsOnBooks.createMany({
             data: authorIds.map((id) => ({ bookId: book.id, authorId: id })),
+        }), reply);
+        yield (0, utils_1.commitToDB)(prisma_1.default.categoriesOnBooks.createMany({
+            data: categoryIds.map((id) => ({ bookId: book.id, categoryId: id })),
         }), reply);
         return book;
     });
@@ -74,6 +91,15 @@ function listCategories(reply) {
     });
 }
 exports.listCategories = listCategories;
+function listCategoriesByBookId(reply, bookId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.categoriesOnBooks.findMany({
+            where: { bookId },
+            select: { category: true },
+        }), reply);
+    });
+}
+exports.listCategoriesByBookId = listCategoriesByBookId;
 function createCategory(reply, data) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, utils_1.commitToDB)(prisma_1.default.category.create({ data }), reply);

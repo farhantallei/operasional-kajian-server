@@ -22,20 +22,20 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecuteRecordActionHandler = exports.CreateRecordHandler = exports.RegisterRecordHandler = exports.ListUpcomingRecordsHandler = exports.ListRecordsHandler = void 0;
 const record_services_1 = require("./record.services");
-const ListRecordsHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+const ListRecordsHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const records = yield (0, record_services_1.listRecords)(reply);
     return records.map((_a) => {
         var { lastPICs, crews, book, place, recordedAt, updatedAt } = _a, record = __rest(_a, ["lastPICs", "crews", "book", "place", "recordedAt", "updatedAt"]);
         return (Object.assign(Object.assign({}, record), { lastPICs: lastPICs.map(({ crew }) => (Object.assign({}, crew))), crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
-                salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
+                salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))), categories: book.categories.map(({ category }) => (Object.assign({}, category))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
     });
 });
 exports.ListRecordsHandler = ListRecordsHandler;
-const ListUpcomingRecordsHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+const ListUpcomingRecordsHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const upcomingRecords = yield (0, record_services_1.listUpcomingRecords)(reply);
     return upcomingRecords.map((_a) => {
         var { crews, book, place, startedOn } = _a, upcomingRecord = __rest(_a, ["crews", "book", "place", "startedOn"]);
-        return (Object.assign(Object.assign({}, upcomingRecord), { book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), startedOn: startedOn.toISOString(), crews: crews.map(({ crew, substitute }) => (Object.assign(Object.assign({}, crew), { substitute }))) }));
+        return (Object.assign(Object.assign({}, upcomingRecord), { book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))), categories: book.categories.map(({ category }) => (Object.assign({}, category))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), startedOn: startedOn.toISOString(), crews: crews.map(({ crew, substitute }) => (Object.assign(Object.assign({}, crew), { substitute }))) }));
     });
 });
 exports.ListUpcomingRecordsHandler = ListUpcomingRecordsHandler;
@@ -43,7 +43,7 @@ const RegisterRecordHandler = (request, reply) => __awaiter(void 0, void 0, void
     const data = request.body;
     const _a = yield (0, record_services_1.registerRecord)(reply, data), { book, place, startedOn } = _a, upcomingRecord = __rest(_a, ["book", "place", "startedOn"]);
     const crews = yield (0, record_services_1.listCrewsByUpcomingRecordId)(reply, upcomingRecord.id);
-    return reply.code(201).send(Object.assign(Object.assign({}, upcomingRecord), { crews: crews.map(({ crew, substitute }) => (Object.assign(Object.assign({}, crew), { substitute }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), startedOn: startedOn.toISOString() }));
+    return reply.code(201).send(Object.assign(Object.assign({}, upcomingRecord), { crews: crews.map(({ crew, substitute }) => (Object.assign(Object.assign({}, crew), { substitute }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))), categories: book.categories.map(({ category }) => (Object.assign({}, category))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), startedOn: startedOn.toISOString() }));
 });
 exports.RegisterRecordHandler = RegisterRecordHandler;
 const CreateRecordHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,13 +53,13 @@ const CreateRecordHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     const crews = yield (0, record_services_1.listCrewsByRecordId)(reply, record.id);
     const PICs = yield (0, record_services_1.listPICsByRecordId)(reply, record.id);
     return reply.code(201).send(Object.assign(Object.assign({}, record), { lastPICs: PICs.map(({ crew }) => (Object.assign({}, crew))), crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
-            salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
+            salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))), categories: book.categories.map(({ category }) => (Object.assign({}, category))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
 });
 exports.CreateRecordHandler = CreateRecordHandler;
 const ExecuteRecordActionHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const _c = request.body, { id, PICIds } = _c, data = __rest(_c, ["id", "PICIds"]);
     const _d = yield (0, record_services_1.executeRecordAction)(reply, id, Object.assign(Object.assign({}, data), { PICs: PICIds.map((id) => ({ crewId: id })) })), { lastPICs, crews, book, place, recordedAt, updatedAt } = _d, record = __rest(_d, ["lastPICs", "crews", "book", "place", "recordedAt", "updatedAt"]);
     return reply.send(Object.assign(Object.assign({}, record), { lastPICs: lastPICs.map(({ crew }) => (Object.assign({}, crew))), crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
-            salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
+            salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))), categories: book.categories.map(({ category }) => (Object.assign({}, category))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
 });
 exports.ExecuteRecordActionHandler = ExecuteRecordActionHandler;

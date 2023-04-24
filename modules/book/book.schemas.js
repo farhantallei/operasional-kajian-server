@@ -14,7 +14,7 @@ exports.bookSchema = type_provider_typebox_1.Type.Object({
     id: type_provider_typebox_1.Type.Integer(),
     title: type_provider_typebox_1.Type.String(),
     authors: type_provider_typebox_1.Type.Array(authorSchema),
-    category: categorySchema,
+    categories: type_provider_typebox_1.Type.Array(categorySchema),
 });
 exports.ListBooksSchema = {
     response: {
@@ -51,7 +51,7 @@ exports.CreateBookSchema = {
     body: type_provider_typebox_1.Type.Object({
         title: type_provider_typebox_1.Type.String(),
         authorIds: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Integer({ minimum: 1 })),
-        categoryId: type_provider_typebox_1.Type.Integer({ minimum: 1 }),
+        categoryIds: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Integer({ minimum: 1 })),
     }),
     response: {
         201: exports.bookSchema,

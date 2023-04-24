@@ -17,20 +17,18 @@ model Author {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  books Book[]
+  id    Int                 @id @default(autoincrement())
+  name  String              @unique
+  books CategoriesOnBooks[]
 }
 
 model Book {
-  category Category @relation(fields: [categoryId], references: [id])
-
-  id             Int              @id @default(autoincrement())
-  title          String
-  authors        AuthorsOnBooks[]
-  categoryId     Int
-  records        Record[]
-  upcomingRecord UpcomingRecord[]
+  id              Int                 @id @default(autoincrement())
+  title           String
+  authors         AuthorsOnBooks[]
+  categories      CategoriesOnBooks[]
+  records         Record[]
+  upcomingRecords UpcomingRecord[]
 }
 
 model AuthorsOnBooks {
@@ -41,6 +39,16 @@ model AuthorsOnBooks {
   authorId Int
 
   @@id([bookId, authorId])
+}
+
+model CategoriesOnBooks {
+  book     Book     @relation(fields: [bookId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  bookId     Int
+  categoryId Int
+
+  @@id([bookId, categoryId])
 }
 
 model Place {

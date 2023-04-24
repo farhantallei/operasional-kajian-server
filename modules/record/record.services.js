@@ -55,7 +55,11 @@ function listRecords(reply) {
                                 author: true,
                             },
                         },
-                        category: true,
+                        categories: {
+                            select: {
+                                category: true,
+                            },
+                        },
                     },
                 },
                 place: true,
@@ -82,7 +86,11 @@ function listUpcomingRecords(reply) {
                                 author: true,
                             },
                         },
-                        category: true,
+                        categories: {
+                            select: {
+                                category: true,
+                            },
+                        },
                     },
                 },
                 place: true,
@@ -111,7 +119,11 @@ function registerRecord(reply, _a) {
                                 author: true,
                             },
                         },
-                        category: true,
+                        categories: {
+                            select: {
+                                category: true,
+                            },
+                        },
                     },
                 },
                 place: true,
@@ -162,7 +174,11 @@ function createRecord(reply, _a, upcomingRecordId) {
                                 author: true,
                             },
                         },
-                        category: true,
+                        categories: {
+                            select: {
+                                category: true,
+                            },
+                        },
                     },
                 },
                 place: true,
@@ -231,7 +247,11 @@ function executeRecordAction(reply, recordId, { action: lastAction, status, PICs
                                 author: true,
                             },
                         },
-                        category: true,
+                        categories: {
+                            select: {
+                                category: true,
+                            },
+                        },
                     },
                 },
                 place: true,

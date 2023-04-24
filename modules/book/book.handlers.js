@@ -8,29 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateBookHandler = exports.CreateCategoryHandler = exports.ListCategoriesHandler = exports.CreateAuthorHandler = exports.ListAuthorsHandler = exports.ListBooksHandler = void 0;
 const book_services_1 = require("./book.services");
-const ListBooksHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    const books = yield (0, book_services_1.listBooks)(reply);
-    return books.map((_a) => {
-        var { authors } = _a, book = __rest(_a, ["authors"]);
-        return (Object.assign(Object.assign({}, book), { authors: authors.map(({ author }) => author) }));
-    });
+const ListBooksHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, book_services_1.listBooks)(reply);
 });
 exports.ListBooksHandler = ListBooksHandler;
-const ListAuthorsHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+const ListAuthorsHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const authors = yield (0, book_services_1.listAuthors)(reply);
     return authors;
 });
@@ -44,7 +29,7 @@ const CreateAuthorHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     return reply.code(201).send(author);
 });
 exports.CreateAuthorHandler = CreateAuthorHandler;
-const ListCategoriesHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+const ListCategoriesHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const categories = yield (0, book_services_1.listCategories)(reply);
     return categories;
 });
@@ -59,9 +44,10 @@ const CreateCategoryHandler = (request, reply) => __awaiter(void 0, void 0, void
 });
 exports.CreateCategoryHandler = CreateCategoryHandler;
 const CreateBookHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, authorIds, categoryId } = request.body;
-    const book = yield (0, book_services_1.createBook)(reply, { title, authorIds, categoryId });
+    const { title, authorIds, categoryIds } = request.body;
+    const book = yield (0, book_services_1.createBook)(reply, { title, authorIds, categoryIds });
     const authors = yield (0, book_services_1.listAuthorsByBookId)(reply, book.id);
-    return reply.code(201).send(Object.assign(Object.assign({}, book), { authors: authors.map(({ author }) => (Object.assign({}, author))) }));
+    const categories = yield (0, book_services_1.listCategoriesByBookId)(reply, book.id);
+    return reply.code(201).send(Object.assign(Object.assign({}, book), { authors: authors.map(({ author }) => (Object.assign({}, author))), categories: categories.map(({ category }) => (Object.assign({}, category))) }));
 });
 exports.CreateBookHandler = CreateBookHandler;
