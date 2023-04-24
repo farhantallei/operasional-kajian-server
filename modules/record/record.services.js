@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listCrewsByRecordId = exports.listCrewsByUpcomingRecordId = exports.executeRecordAction = exports.createRecord = exports.registerRecord = exports.listUpcomingRecords = exports.listRecords = void 0;
+exports.listPICsByRecordActionAuditId = exports.listPICsByRecordId = exports.listCrewsByRecordId = exports.listCrewsByUpcomingRecordId = exports.executeRecordAction = exports.createRecord = exports.registerRecord = exports.listUpcomingRecords = exports.listRecords = void 0;
 const prisma_1 = __importDefault(require("../../lib/prisma"));
 const utils_1 = require("../../utils");
 function listRecords(reply) {
@@ -44,7 +44,7 @@ function listRecords(reply) {
                     },
                 },
                 status: true,
-                lastPIC: true,
+                lastPICs: { select: { crew: true } },
                 crews: { select: { crew: true, role: true, salaryStatus: true } },
                 book: {
                     select: {
@@ -132,9 +132,11 @@ exports.registerRecord = registerRecord;
 function createRecord(reply, _a, upcomingRecordId) {
     var { crews } = _a, data = __rest(_a, ["crews"]);
     return __awaiter(this, void 0, void 0, function* () {
-        const recorderPICId = crews.filter((crew) => crew.role === 'recording')[0].id;
+        const recorderPICIds = crews
+            .filter((crew) => crew.role === 'recording')
+            .map(({ id }) => ({ crewId: id }));
         const record = yield (0, utils_1.commitToDB)(prisma_1.default.record.create({
-            data: Object.assign(Object.assign({}, data), { lastAction: 'record', lastPICId: recorderPICId }),
+            data: Object.assign(Object.assign({}, data), { lastAction: 'record', lastPICs: { createMany: { data: recorderPICIds } } }),
             select: {
                 id: true,
                 title: true,
@@ -150,7 +152,7 @@ function createRecord(reply, _a, upcomingRecordId) {
                     },
                 },
                 status: true,
-                lastPIC: true,
+                lastPICs: { select: { crew: true } },
                 book: {
                     select: {
                         id: true,
@@ -181,7 +183,7 @@ function createRecord(reply, _a, upcomingRecordId) {
                 recordId: record.id,
                 action: record.lastAction,
                 status: record.status,
-                PICId: recorderPICId,
+                PICs: { createMany: { data: recorderPICIds } },
                 locationId: record.location.id,
                 performedOn: record.updatedAt.toISOString(),
             },
@@ -191,14 +193,15 @@ function createRecord(reply, _a, upcomingRecordId) {
     });
 }
 exports.createRecord = createRecord;
-function executeRecordAction(reply, recordId, { action: lastAction, status, PICId: lastPICId, locationId, }) {
+function executeRecordAction(reply, recordId, { action: lastAction, status, PICs: lastPICs, locationId, }) {
     return __awaiter(this, void 0, void 0, function* () {
+        yield (0, utils_1.commitToDB)(prisma_1.default.lastPICsOnRecords.deleteMany({ where: { recordId } }));
         const record = yield (0, utils_1.commitToDB)(prisma_1.default.record.update({
             where: { id: recordId },
             data: {
                 lastAction,
                 status,
-                lastPICId,
+                lastPICs: { createMany: { data: lastPICs } },
                 locationId,
                 updatedAt: new Date(),
             },
@@ -217,7 +220,7 @@ function executeRecordAction(reply, recordId, { action: lastAction, status, PICI
                     },
                 },
                 status: true,
-                lastPIC: true,
+                lastPICs: { select: { crew: true } },
                 crews: { select: { crew: true, role: true, salaryStatus: true } },
                 book: {
                     select: {
@@ -241,7 +244,7 @@ function executeRecordAction(reply, recordId, { action: lastAction, status, PICI
                 recordId,
                 action: lastAction,
                 status: status,
-                PICId: lastPICId,
+                PICs: { create: lastPICs },
                 locationId,
                 performedOn: record.updatedAt.toISOString(),
             },
@@ -268,3 +271,21 @@ function listCrewsByRecordId(reply, recordId) {
     });
 }
 exports.listCrewsByRecordId = listCrewsByRecordId;
+function listPICsByRecordId(reply, recordId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.lastPICsOnRecords.findMany({
+            where: { recordId },
+            select: { crew: true },
+        }), reply);
+    });
+}
+exports.listPICsByRecordId = listPICsByRecordId;
+function listPICsByRecordActionAuditId(reply, recordActionAuditId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.pICsOnRecordActionAudits.findMany({
+            where: { recordActionAuditId },
+            select: { crew: true },
+        }), reply);
+    });
+}
+exports.listPICsByRecordActionAuditId = listPICsByRecordActionAuditId;

@@ -31,7 +31,7 @@ const recordSchema = type_provider_typebox_1.Type.Object({
     lastAction: type_provider_typebox_1.Type.Union(actionEnum),
     location: storageDevice_schemas_1.storageDeviceSchema,
     status: type_provider_typebox_1.Type.Union(statusEnum),
-    lastPIC: type_provider_typebox_1.Type.Union([crew_schemas_1.crewSchema, type_provider_typebox_1.Type.Null()]),
+    lastPICs: type_provider_typebox_1.Type.Array(crew_schemas_1.crewSchema),
     crews: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Object({
         id: type_provider_typebox_1.Type.Integer(),
         username: type_provider_typebox_1.Type.String(),
@@ -110,7 +110,7 @@ exports.ExecuteRecordActionSchema = {
         id: type_provider_typebox_1.Type.Integer({ minimum: 1 }),
         action: type_provider_typebox_1.Type.Union(actionEnum),
         status: type_provider_typebox_1.Type.Union(statusEnum),
-        PICId: type_provider_typebox_1.Type.Integer({ minimum: 1 }),
+        PICIds: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Integer({ minimum: 1 })),
         locationId: type_provider_typebox_1.Type.Integer({ minimum: 1 }),
     }),
     response: { 200: recordSchema },

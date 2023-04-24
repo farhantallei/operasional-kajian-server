@@ -25,8 +25,8 @@ const record_services_1 = require("./record.services");
 const ListRecordsHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const records = yield (0, record_services_1.listRecords)(reply);
     return records.map((_a) => {
-        var { crews, book, place, recordedAt, updatedAt } = _a, record = __rest(_a, ["crews", "book", "place", "recordedAt", "updatedAt"]);
-        return (Object.assign(Object.assign({}, record), { crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
+        var { lastPICs, crews, book, place, recordedAt, updatedAt } = _a, record = __rest(_a, ["lastPICs", "crews", "book", "place", "recordedAt", "updatedAt"]);
+        return (Object.assign(Object.assign({}, record), { lastPICs: lastPICs.map(({ crew }) => (Object.assign({}, crew))), crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
                 salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
     });
 });
@@ -51,14 +51,15 @@ const CreateRecordHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     const { upcomingRecordId } = request.params;
     const _b = yield (0, record_services_1.createRecord)(reply, data, upcomingRecordId), { book, place, recordedAt, updatedAt } = _b, record = __rest(_b, ["book", "place", "recordedAt", "updatedAt"]);
     const crews = yield (0, record_services_1.listCrewsByRecordId)(reply, record.id);
-    return reply.code(201).send(Object.assign(Object.assign({}, record), { crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
+    const PICs = yield (0, record_services_1.listPICsByRecordId)(reply, record.id);
+    return reply.code(201).send(Object.assign(Object.assign({}, record), { lastPICs: PICs.map(({ crew }) => (Object.assign({}, crew))), crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
             salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
 });
 exports.CreateRecordHandler = CreateRecordHandler;
 const ExecuteRecordActionHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    const _c = request.body, { id } = _c, data = __rest(_c, ["id"]);
-    const _d = yield (0, record_services_1.executeRecordAction)(reply, id, data), { crews, book, place, recordedAt, updatedAt } = _d, record = __rest(_d, ["crews", "book", "place", "recordedAt", "updatedAt"]);
-    return reply.send(Object.assign(Object.assign({}, record), { crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
+    const _c = request.body, { id, PICIds } = _c, data = __rest(_c, ["id", "PICIds"]);
+    const _d = yield (0, record_services_1.executeRecordAction)(reply, id, Object.assign(Object.assign({}, data), { PICs: PICIds.map((id) => ({ crewId: id })) })), { lastPICs, crews, book, place, recordedAt, updatedAt } = _d, record = __rest(_d, ["lastPICs", "crews", "book", "place", "recordedAt", "updatedAt"]);
+    return reply.send(Object.assign(Object.assign({}, record), { lastPICs: lastPICs.map(({ crew }) => (Object.assign({}, crew))), crews: crews.map(({ crew, role, salaryStatus }) => (Object.assign(Object.assign({}, crew), { role,
             salaryStatus }))), book: Object.assign(Object.assign({}, book), { authors: book.authors.map(({ author }) => (Object.assign({}, author))) }), place: Object.assign(Object.assign({}, place), { latitude: place.latitude.toNumber(), longitude: place.longitude.toNumber() }), recordedAt: recordedAt.toISOString(), updatedAt: updatedAt.toISOString() }));
 });
 exports.ExecuteRecordActionHandler = ExecuteRecordActionHandler;
