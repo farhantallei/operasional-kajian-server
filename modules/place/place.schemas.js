@@ -11,7 +11,10 @@ exports.placeSchema = type_provider_typebox_1.Type.Object({
 });
 exports.ListPlacesSchema = {
     response: {
-        200: type_provider_typebox_1.Type.Array(exports.placeSchema),
+        200: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Object({
+            label: type_provider_typebox_1.Type.String(),
+            value: type_provider_typebox_1.Type.Integer(),
+        })),
     },
 };
 exports.CreatePlaceSchema = {

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateStorageDeviceSchema = exports.ListStorageDevicesSchema = exports.CreateDeviceSchema = exports.ListDevicesSchema = exports.storageDeviceSchema = void 0;
 const type_provider_typebox_1 = require("@fastify/type-provider-typebox");
-const crew_schemas_1 = require("../crew/crew.schemas");
+const member_schemas_1 = require("../member/member.schemas");
 const deviceSchema = type_provider_typebox_1.Type.Object({
     id: type_provider_typebox_1.Type.Integer(),
     type: type_provider_typebox_1.Type.String(),
@@ -12,7 +12,7 @@ exports.storageDeviceSchema = type_provider_typebox_1.Type.Object({
     brand: type_provider_typebox_1.Type.String(),
     device: deviceSchema,
     storage: type_provider_typebox_1.Type.Integer(),
-    owner: crew_schemas_1.crewSchema,
+    owner: member_schemas_1.memberSchema,
 });
 exports.ListDevicesSchema = {
     response: {

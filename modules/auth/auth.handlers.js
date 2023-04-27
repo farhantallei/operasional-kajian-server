@@ -26,11 +26,13 @@ const LoginHandler = (request, reply) => __awaiter(void 0, void 0, void 0, funct
     const refreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
         expiresIn: '3d',
     });
+    const expires = setExpirationTime(72);
     reply.setCookie('jwt_token', refreshToken, {
         signed: true,
         httpOnly: true,
         sameSite: 'none',
         secure: true,
+        expires,
     });
     const accessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
     return { token: accessToken };
@@ -46,11 +48,13 @@ const RefreshTokenHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     const newRefreshToken = jsonwebtoken_1.default.sign({}, env_1.REFRESH_TOKEN_SECRET, {
         expiresIn: '3d',
     });
+    const expires = setExpirationTime(72);
     reply.setCookie('jwt_token', newRefreshToken, {
         signed: true,
         httpOnly: true,
         sameSite: 'none',
         secure: true,
+        expires,
     });
     const newAccessToken = jsonwebtoken_1.default.sign({}, env_1.ACCESS_TOKEN_SECRET, {
         expiresIn: '15m',
@@ -58,3 +62,10 @@ const RefreshTokenHandler = (request, reply) => __awaiter(void 0, void 0, void 0
     return { token: newAccessToken };
 });
 exports.RefreshTokenHandler = RefreshTokenHandler;
+function setExpirationTime(hours) {
+    const now = new Date();
+    const time = now.getTime();
+    const expireTime = time + 1000 * 3600 * hours;
+    now.setTime(expireTime);
+    return now;
+}

@@ -11,9 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePlaceHandler = exports.ListPlacesHandler = void 0;
 const place_services_1 = require("./place.services");
-const ListPlacesHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    const places = yield (0, place_services_1.listPlaces)(reply);
-    return places;
+const ListPlacesHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, place_services_1.listPlaces)(reply);
 });
 exports.ListPlacesHandler = ListPlacesHandler;
 const CreatePlaceHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {

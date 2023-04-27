@@ -18,12 +18,18 @@ exports.bookSchema = type_provider_typebox_1.Type.Object({
 });
 exports.ListBooksSchema = {
     response: {
-        200: type_provider_typebox_1.Type.Array(exports.bookSchema),
+        200: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Object({
+            label: type_provider_typebox_1.Type.String(),
+            value: type_provider_typebox_1.Type.Integer(),
+        })),
     },
 };
 exports.ListAuthorsSchema = {
     response: {
-        200: type_provider_typebox_1.Type.Array(authorSchema),
+        200: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Object({
+            label: type_provider_typebox_1.Type.String(),
+            value: type_provider_typebox_1.Type.Integer(),
+        })),
     },
 };
 exports.CreateAuthorSchema = {
@@ -36,7 +42,10 @@ exports.CreateAuthorSchema = {
 };
 exports.ListCategoriesSchema = {
     response: {
-        200: type_provider_typebox_1.Type.Array(categorySchema),
+        200: type_provider_typebox_1.Type.Array(type_provider_typebox_1.Type.Object({
+            label: type_provider_typebox_1.Type.String(),
+            value: type_provider_typebox_1.Type.Integer(),
+        })),
     },
 };
 exports.CreateCategorySchema = {

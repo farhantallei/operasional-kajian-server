@@ -16,8 +16,7 @@ const ListBooksHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, 
 });
 exports.ListBooksHandler = ListBooksHandler;
 const ListAuthorsHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    const authors = yield (0, book_services_1.listAuthors)(reply);
-    return authors;
+    return yield (0, book_services_1.listAuthors)(reply);
 });
 exports.ListAuthorsHandler = ListAuthorsHandler;
 const CreateAuthorHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
@@ -30,8 +29,7 @@ const CreateAuthorHandler = (request, reply) => __awaiter(void 0, void 0, void 0
 });
 exports.CreateAuthorHandler = CreateAuthorHandler;
 const ListCategoriesHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    const categories = yield (0, book_services_1.listCategories)(reply);
-    return categories;
+    return yield (0, book_services_1.listCategories)(reply);
 });
 exports.ListCategoriesHandler = ListCategoriesHandler;
 const CreateCategoryHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {

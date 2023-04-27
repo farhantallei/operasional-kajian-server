@@ -35,7 +35,7 @@ function listStorageDevices(reply) {
                 brand: true,
                 device: true,
                 storage: true,
-                owner: true,
+                owner: { include: { roles: true } },
             },
         }), reply);
     });
@@ -50,7 +50,7 @@ function createStorageDevice(reply, data) {
                 brand: true,
                 device: true,
                 storage: true,
-                owner: true,
+                owner: { include: { roles: true } },
             },
         }), reply);
     });

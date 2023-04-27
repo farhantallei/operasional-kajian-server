@@ -63,17 +63,33 @@ model Place {
   @@unique([latitude, longitude])
 }
 
-model Crew {
+enum MemberRoleEnum {
+  operator
+  editor
+  teacher
+}
+
+model Member {
   id                 Int                        @id @default(autoincrement())
   username           String                     @unique
   name               String
   email              String?
   phoneNumber        String?
+  roles              MemberRole[]
   storageDevices     StorageDevice[]
-  records            CrewsOnRecords[]
-  upcomingRecords    CrewsOnUpcomingRecords[]
+  records            MembersOnRecords[]
+  upcomingRecords    MembersOnUpcomingRecords[]
   recordsLastPIC     LastPICsOnRecords[]
   recordActionAudits PICsOnRecordActionAudits[]
+}
+
+model MemberRole {
+  member Member @relation(fields: [memberId], references: [id])
+
+  memberId Int
+  role     MemberRoleEnum
+
+  @@id([memberId, role])
 }
 
 model Device {
@@ -84,7 +100,7 @@ model Device {
 
 model StorageDevice {
   device Device @relation(fields: [deviceId], references: [id])
-  owner  Crew   @relation(fields: [ownerId], references: [id])
+  owner  Member @relation(fields: [ownerId], references: [id])
 
   id                Int                 @id @default(autoincrement())
   brand             String
@@ -122,9 +138,10 @@ model Record {
   status             RecordStatus
   bookId             Int
   placeId            Int
+  startedOn          DateTime
   recordedAt         DateTime
   updatedAt          DateTime            @default(now())
-  crews              CrewsOnRecords[]
+  members            MembersOnRecords[]
   recordActionAudits RecordActionAudit[]
   lastPICs           LastPICsOnRecords[]
 
@@ -133,39 +150,39 @@ model Record {
 
 model LastPICsOnRecords {
   record Record @relation(fields: [recordId], references: [id])
-  crew   Crew   @relation(fields: [crewId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
 
   recordId Int
-  crewId   Int
+  memberId Int
 
-  @@id([recordId, crewId])
+  @@id([recordId, memberId])
 }
 
 model UpcomingRecord {
   book  Book  @relation(fields: [bookId], references: [id])
   place Place @relation(fields: [placeId], references: [id])
 
-  id        Int                      @id @default(autoincrement())
+  id        Int                        @id @default(autoincrement())
   title     String
   sequence  Int
   bookId    Int
   placeId   Int
   startedOn DateTime
-  crews     CrewsOnUpcomingRecords[]
+  members   MembersOnUpcomingRecords[]
 }
 
-model CrewsOnUpcomingRecords {
+model MembersOnUpcomingRecords {
   upcomingRecord UpcomingRecord @relation(fields: [upcomingRecordId], references: [id])
-  crew           Crew           @relation(fields: [crewId], references: [id])
+  member         Member         @relation(fields: [memberId], references: [id])
 
   upcomingRecordId Int
-  crewId           Int
+  memberId         Int
   substitute       Boolean
 
-  @@id([upcomingRecordId, crewId])
+  @@id([upcomingRecordId, memberId])
 }
 
-enum CrewRole {
+enum RecordRole {
   recording
   streaming
   editing
@@ -176,16 +193,16 @@ enum SalaryStatus {
   unpaid
 }
 
-model CrewsOnRecords {
+model MembersOnRecords {
   record Record @relation(fields: [recordId], references: [id])
-  crew   Crew   @relation(fields: [crewId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
 
   recordId     Int
-  crewId       Int
-  role         CrewRole
+  memberId     Int
+  recordRole   RecordRole
   salaryStatus SalaryStatus
 
-  @@id([recordId, crewId])
+  @@id([recordId, memberId])
 }
 
 model RecordActionAudit {
@@ -206,8 +223,8 @@ model RecordActionAudit {
 model PICsOnRecordActionAudits {
   recordActionAudit   RecordActionAudit @relation(fields: [recordActionAuditId], references: [id])
   recordActionAuditId Int
-  crew                Crew              @relation(fields: [crewId], references: [id])
-  crewId              Int
+  member              Member            @relation(fields: [memberId], references: [id])
+  memberId            Int
 
-  @@id([recordActionAuditId, crewId])
+  @@id([recordActionAuditId, memberId])
 }

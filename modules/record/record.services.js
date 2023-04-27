@@ -40,29 +40,28 @@ function listRecords(reply) {
                         brand: true,
                         device: true,
                         storage: true,
-                        owner: true,
+                        owner: { include: { roles: true } },
                     },
                 },
                 status: true,
-                lastPICs: { select: { crew: true } },
-                crews: { select: { crew: true, role: true, salaryStatus: true } },
+                lastPICs: { select: { member: { include: { roles: true } } } },
+                members: {
+                    select: {
+                        member: { include: { roles: true } },
+                        recordRole: true,
+                        salaryStatus: true,
+                    },
+                },
                 book: {
                     select: {
                         id: true,
                         title: true,
-                        authors: {
-                            select: {
-                                author: true,
-                            },
-                        },
-                        categories: {
-                            select: {
-                                category: true,
-                            },
-                        },
+                        authors: { select: { author: true } },
+                        categories: { select: { category: true } },
                     },
                 },
                 place: true,
+                startedOn: true,
                 recordedAt: true,
                 updatedAt: true,
             },
@@ -81,28 +80,23 @@ function listUpcomingRecords(reply) {
                     select: {
                         id: true,
                         title: true,
-                        authors: {
-                            select: {
-                                author: true,
-                            },
-                        },
-                        categories: {
-                            select: {
-                                category: true,
-                            },
-                        },
+                        authors: { select: { author: true } },
+                        categories: { select: { category: true } },
                     },
                 },
                 place: true,
                 startedOn: true,
-                crews: { select: { crew: true, substitute: true } },
+                members: {
+                    select: { member: { include: { roles: true } }, substitute: true },
+                },
             },
+            orderBy: { startedOn: 'asc' },
         }), reply);
     });
 }
 exports.listUpcomingRecords = listUpcomingRecords;
 function registerRecord(reply, _a) {
-    var { crews } = _a, data = __rest(_a, ["crews"]);
+    var { crewIds, substituteIds } = _a, data = __rest(_a, ["crewIds", "substituteIds"]);
     return __awaiter(this, void 0, void 0, function* () {
         const upcomingRecord = yield (0, utils_1.commitToDB)(prisma_1.default.upcomingRecord.create({
             data,
@@ -114,39 +108,38 @@ function registerRecord(reply, _a) {
                     select: {
                         id: true,
                         title: true,
-                        authors: {
-                            select: {
-                                author: true,
-                            },
-                        },
-                        categories: {
-                            select: {
-                                category: true,
-                            },
-                        },
+                        authors: { select: { author: true } },
+                        categories: { select: { category: true } },
                     },
                 },
                 place: true,
                 startedOn: true,
             },
         }), reply);
-        yield (0, utils_1.commitToDB)(prisma_1.default.crewsOnUpcomingRecords.createMany({
-            data: crews.map((crew) => ({
-                upcomingRecordId: upcomingRecord.id,
-                crewId: crew.id,
-                substitute: crew.substitute,
-            })),
+        yield (0, utils_1.commitToDB)(prisma_1.default.membersOnUpcomingRecords.createMany({
+            data: [
+                ...crewIds.map((id) => ({
+                    upcomingRecordId: upcomingRecord.id,
+                    memberId: id,
+                    substitute: false,
+                })),
+                ...substituteIds.map((id) => ({
+                    upcomingRecordId: upcomingRecord.id,
+                    memberId: id,
+                    substitute: true,
+                })),
+            ],
         }), reply);
         return upcomingRecord;
     });
 }
 exports.registerRecord = registerRecord;
 function createRecord(reply, _a, upcomingRecordId) {
-    var { crews } = _a, data = __rest(_a, ["crews"]);
+    var { members } = _a, data = __rest(_a, ["members"]);
     return __awaiter(this, void 0, void 0, function* () {
-        const recorderPICIds = crews
-            .filter((crew) => crew.role === 'recording')
-            .map(({ id }) => ({ crewId: id }));
+        const recorderPICIds = members
+            .filter((member) => member.recordRole === 'recording')
+            .map(({ id }) => ({ memberId: id }));
         const record = yield (0, utils_1.commitToDB)(prisma_1.default.record.create({
             data: Object.assign(Object.assign({}, data), { lastAction: 'record', lastPICs: { createMany: { data: recorderPICIds } } }),
             select: {
@@ -160,37 +153,30 @@ function createRecord(reply, _a, upcomingRecordId) {
                         brand: true,
                         device: true,
                         storage: true,
-                        owner: true,
+                        owner: { include: { roles: true } },
                     },
                 },
                 status: true,
-                lastPICs: { select: { crew: true } },
+                lastPICs: { select: { member: { include: { roles: true } } } },
                 book: {
                     select: {
                         id: true,
                         title: true,
-                        authors: {
-                            select: {
-                                author: true,
-                            },
-                        },
-                        categories: {
-                            select: {
-                                category: true,
-                            },
-                        },
+                        authors: { select: { author: true } },
+                        categories: { select: { category: true } },
                     },
                 },
                 place: true,
+                startedOn: true,
                 recordedAt: true,
                 updatedAt: true,
             },
         }), reply);
-        yield (0, utils_1.commitToDB)(prisma_1.default.crewsOnRecords.createMany({
-            data: crews.map((crew) => ({
+        yield (0, utils_1.commitToDB)(prisma_1.default.membersOnRecords.createMany({
+            data: members.map((member) => ({
                 recordId: record.id,
-                crewId: crew.id,
-                role: crew.role,
+                memberId: member.id,
+                recordRole: member.recordRole,
                 salaryStatus: 'unpaid',
             })),
         }), reply);
@@ -232,29 +218,28 @@ function executeRecordAction(reply, recordId, { action: lastAction, status, PICs
                         brand: true,
                         device: true,
                         storage: true,
-                        owner: true,
+                        owner: { include: { roles: true } },
                     },
                 },
                 status: true,
-                lastPICs: { select: { crew: true } },
-                crews: { select: { crew: true, role: true, salaryStatus: true } },
+                lastPICs: { select: { member: { include: { roles: true } } } },
+                members: {
+                    select: {
+                        member: { include: { roles: true } },
+                        recordRole: true,
+                        salaryStatus: true,
+                    },
+                },
                 book: {
                     select: {
                         id: true,
                         title: true,
-                        authors: {
-                            select: {
-                                author: true,
-                            },
-                        },
-                        categories: {
-                            select: {
-                                category: true,
-                            },
-                        },
+                        authors: { select: { author: true } },
+                        categories: { select: { category: true } },
                     },
                 },
                 place: true,
+                startedOn: true,
                 recordedAt: true,
                 updatedAt: true,
             },
@@ -275,18 +260,22 @@ function executeRecordAction(reply, recordId, { action: lastAction, status, PICs
 exports.executeRecordAction = executeRecordAction;
 function listCrewsByUpcomingRecordId(reply, upcomingRecordId) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, utils_1.commitToDB)(prisma_1.default.crewsOnUpcomingRecords.findMany({
+        return yield (0, utils_1.commitToDB)(prisma_1.default.membersOnUpcomingRecords.findMany({
             where: { upcomingRecordId },
-            select: { crew: true, substitute: true },
+            select: { member: { include: { roles: true } }, substitute: true },
         }), reply);
     });
 }
 exports.listCrewsByUpcomingRecordId = listCrewsByUpcomingRecordId;
 function listCrewsByRecordId(reply, recordId) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, utils_1.commitToDB)(prisma_1.default.crewsOnRecords.findMany({
+        return yield (0, utils_1.commitToDB)(prisma_1.default.membersOnRecords.findMany({
             where: { recordId },
-            select: { crew: true, role: true, salaryStatus: true },
+            select: {
+                member: { include: { roles: true } },
+                recordRole: true,
+                salaryStatus: true,
+            },
         }), reply);
     });
 }
@@ -295,7 +284,7 @@ function listPICsByRecordId(reply, recordId) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, utils_1.commitToDB)(prisma_1.default.lastPICsOnRecords.findMany({
             where: { recordId },
-            select: { crew: true },
+            select: { member: { include: { roles: true } } },
         }), reply);
     });
 }
@@ -304,7 +293,7 @@ function listPICsByRecordActionAuditId(reply, recordActionAuditId) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, utils_1.commitToDB)(prisma_1.default.pICsOnRecordActionAudits.findMany({
             where: { recordActionAuditId },
-            select: { crew: true },
+            select: { member: { include: { roles: true } } },
         }), reply);
     });
 }

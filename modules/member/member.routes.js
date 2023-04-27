@@ -9,19 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.crewRoutes = void 0;
-const crew_handlers_1 = require("./crew.handlers");
-const crew_schemas_1 = require("./crew.schemas");
+exports.memberRoutes = void 0;
+const member_handlers_1 = require("./member.handlers");
+const member_schemas_1 = require("./member.schemas");
 const middleware_1 = require("../../middleware");
-const crewRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
+const memberRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
     route.addHook('preHandler', middleware_1.authentication);
     route.get('/', {
-        schema: crew_schemas_1.ListCrewsSchema,
-        handler: crew_handlers_1.ListCrewsHandler,
+        schema: member_schemas_1.ListMembersSchema,
+        handler: member_handlers_1.ListMembersHandler,
+    });
+    route.get('/operator', {
+        schema: member_schemas_1.ListCrewsSchema,
+        handler: member_handlers_1.ListOperatorsHandler,
     });
     route.post('/', {
-        schema: crew_schemas_1.CreateCrewSchema,
-        handler: crew_handlers_1.CreateCrewHandler,
+        schema: member_schemas_1.CreateMemberSchema,
+        handler: member_handlers_1.CreateMemberHandler,
     });
 });
-exports.crewRoutes = crewRoutes;
+exports.memberRoutes = memberRoutes;

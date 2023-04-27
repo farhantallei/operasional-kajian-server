@@ -23,24 +23,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPlace = exports.listPlaces = void 0;
+exports.listRolesByMemberId = exports.createMember = exports.listOperators = exports.listMembers = void 0;
 const prisma_1 = __importDefault(require("../../lib/prisma"));
 const utils_1 = require("../../utils");
-function listPlaces(reply) {
+function listMembers(reply) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, utils_1.commitToDB)(prisma_1.default.place.findMany({
-            select: { id: true, name: true },
+        return yield (0, utils_1.commitToDB)(prisma_1.default.member.findMany({
+            include: { roles: true },
             orderBy: { name: 'asc' },
-        }), reply).then((places) => places.map(({ id, name }) => ({ label: name, value: id })));
+        }), reply);
     });
 }
-exports.listPlaces = listPlaces;
-function createPlace(reply, data) {
+exports.listMembers = listMembers;
+function listOperators(reply) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, utils_1.commitToDB)(prisma_1.default.place.create({ data }), reply).then((_a) => {
-            var { latitude, longitude } = _a, place = __rest(_a, ["latitude", "longitude"]);
-            return (Object.assign(Object.assign({}, place), { latitude: latitude.toNumber(), longitude: longitude.toNumber() }));
-        });
+        return yield (0, utils_1.commitToDB)(prisma_1.default.member.findMany({
+            select: { id: true, name: true },
+            where: { roles: { every: { role: 'operator' } } },
+            orderBy: { name: 'asc' },
+        }), reply).then((members) => members.map(({ id, name }) => ({ label: name, value: id })));
     });
 }
-exports.createPlace = createPlace;
+exports.listOperators = listOperators;
+function createMember(reply, _a) {
+    var { roles } = _a, data = __rest(_a, ["roles"]);
+    return __awaiter(this, void 0, void 0, function* () {
+        const member = yield (0, utils_1.commitToDB)(prisma_1.default.member.create({ data }), reply);
+        yield (0, utils_1.commitToDB)(prisma_1.default.memberRole.createMany({
+            data: roles.map((role) => ({ memberId: member.id, role })),
+        }), reply);
+        return member;
+    });
+}
+exports.createMember = createMember;
+function listRolesByMemberId(reply, memberId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.memberRole.findMany({ where: { memberId } }), reply);
+    });
+}
+exports.listRolesByMemberId = listRolesByMemberId;

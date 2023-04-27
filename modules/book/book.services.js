@@ -8,17 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -32,13 +21,9 @@ function listBooks(reply) {
             select: {
                 id: true,
                 title: true,
-                authors: { select: { author: true } },
-                categories: { select: { category: true } },
             },
-        }), reply).then((books) => books.map((_a) => {
-            var { authors, categories } = _a, book = __rest(_a, ["authors", "categories"]);
-            return (Object.assign(Object.assign({}, book), { authors: authors.map(({ author }) => (Object.assign({}, author))), categories: categories.map(({ category }) => (Object.assign({}, category))) }));
-        }));
+            orderBy: { title: 'asc' },
+        }), reply).then((books) => books.map(({ id, title }) => ({ label: title, value: id })));
     });
 }
 exports.listBooks = listBooks;
@@ -60,7 +45,7 @@ function createBook(reply, { title, authorIds, categoryIds, }) {
 exports.createBook = createBook;
 function listAuthors(reply) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, utils_1.commitToDB)(prisma_1.default.author.findMany(), reply);
+        return yield (0, utils_1.commitToDB)(prisma_1.default.author.findMany({ orderBy: { name: 'asc' } }), reply).then((categories) => categories.map(({ id, name }) => ({ label: name, value: id })));
     });
 }
 exports.listAuthors = listAuthors;
@@ -87,7 +72,7 @@ function checkAuthor(reply, name) {
 exports.checkAuthor = checkAuthor;
 function listCategories(reply) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, utils_1.commitToDB)(prisma_1.default.category.findMany(), reply);
+        return yield (0, utils_1.commitToDB)(prisma_1.default.category.findMany({ orderBy: { name: 'asc' } }), reply).then((categories) => categories.map(({ id, name }) => ({ label: name, value: id })));
     });
 }
 exports.listCategories = listCategories;
