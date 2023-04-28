@@ -35,5 +35,9 @@ const recordRoutes = (route) => __awaiter(void 0, void 0, void 0, function* () {
         schema: record_schemas_1.ExecuteRecordActionSchema,
         handler: record_handlers_1.ExecuteRecordActionHandler,
     });
+    route.delete('/upcoming/:id', {
+        schema: record_schemas_1.DeleteUpcomingRecordSchema,
+        handler: record_handlers_1.DeleteUpcomingRecordHandler,
+    });
 });
 exports.recordRoutes = recordRoutes;

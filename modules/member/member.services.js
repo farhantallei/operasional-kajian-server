@@ -39,7 +39,7 @@ function listOperators(reply) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, utils_1.commitToDB)(prisma_1.default.member.findMany({
             select: { id: true, name: true },
-            where: { roles: { every: { role: 'operator' } } },
+            where: { roles: { some: { role: 'operator' } } },
             orderBy: { name: 'asc' },
         }), reply).then((members) => members.map(({ id, name }) => ({ label: name, value: id })));
     });

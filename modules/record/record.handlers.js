@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExecuteRecordActionHandler = exports.CreateRecordHandler = exports.RegisterRecordHandler = exports.ListUpcomingRecordsHandler = exports.ListRecordsHandler = void 0;
+exports.ExecuteRecordActionHandler = exports.CreateRecordHandler = exports.RegisterRecordHandler = exports.DeleteUpcomingRecordHandler = exports.ListUpcomingRecordsHandler = exports.ListRecordsHandler = void 0;
 const record_services_1 = require("./record.services");
 const ListRecordsHandler = (_request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const records = yield (0, record_services_1.listRecords)(reply);
@@ -39,6 +39,15 @@ const ListUpcomingRecordsHandler = (_request, reply) => __awaiter(void 0, void 0
     });
 });
 exports.ListUpcomingRecordsHandler = ListUpcomingRecordsHandler;
+const DeleteUpcomingRecordHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = request.params;
+    const isUpcomingRecordExists = yield (0, record_services_1.getUpcomingRecordById)(reply, id);
+    if (!isUpcomingRecordExists)
+        return reply.notFound('Upcoming Record is not found.');
+    yield (0, record_services_1.deleteUpcomingRecord)(reply, id);
+    return reply.code(204).send({});
+});
+exports.DeleteUpcomingRecordHandler = DeleteUpcomingRecordHandler;
 const RegisterRecordHandler = (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     const data = request.body;
     const hasSameId = data.crewIds.some((id) => data.substituteIds.includes(id));

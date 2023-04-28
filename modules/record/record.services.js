@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listPICsByRecordActionAuditId = exports.listPICsByRecordId = exports.listCrewsByRecordId = exports.listCrewsByUpcomingRecordId = exports.executeRecordAction = exports.createRecord = exports.registerRecord = exports.listUpcomingRecords = exports.listRecords = void 0;
+exports.listPICsByRecordActionAuditId = exports.listPICsByRecordId = exports.listCrewsByRecordId = exports.listCrewsByUpcomingRecordId = exports.executeRecordAction = exports.createRecord = exports.registerRecord = exports.deleteUpcomingRecord = exports.listUpcomingRecords = exports.getUpcomingRecordById = exports.listRecords = void 0;
 const prisma_1 = __importDefault(require("../../lib/prisma"));
 const utils_1 = require("../../utils");
 function listRecords(reply) {
@@ -69,6 +69,12 @@ function listRecords(reply) {
     });
 }
 exports.listRecords = listRecords;
+function getUpcomingRecordById(reply, id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.upcomingRecord.findUnique({ where: { id } }), reply);
+    });
+}
+exports.getUpcomingRecordById = getUpcomingRecordById;
 function listUpcomingRecords(reply) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield (0, utils_1.commitToDB)(prisma_1.default.upcomingRecord.findMany({
@@ -88,6 +94,7 @@ function listUpcomingRecords(reply) {
                 startedOn: true,
                 members: {
                     select: { member: { include: { roles: true } }, substitute: true },
+                    orderBy: [{ substitute: 'asc' }, { member: { name: 'asc' } }],
                 },
             },
             orderBy: { startedOn: 'asc' },
@@ -95,6 +102,12 @@ function listUpcomingRecords(reply) {
     });
 }
 exports.listUpcomingRecords = listUpcomingRecords;
+function deleteUpcomingRecord(reply, id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, utils_1.commitToDB)(prisma_1.default.upcomingRecord.delete({ where: { id } }), reply);
+    });
+}
+exports.deleteUpcomingRecord = deleteUpcomingRecord;
 function registerRecord(reply, _a) {
     var { crewIds, substituteIds } = _a, data = __rest(_a, ["crewIds", "substituteIds"]);
     return __awaiter(this, void 0, void 0, function* () {
